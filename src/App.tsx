@@ -1,26 +1,30 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import styled, { ThemeProvider } from 'styled-components';
+import { GlobalStyle } from './styles/globalStyles';
+import { themes } from './styles/theme';
+import GreetingBanner from './components/GreetingBanner/GreetingBanner';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const AppWrapper = styled.div`
+    text-align: center;
+`;
+
+const App: React.FC = () => {
+    const userId = window.appConfig?.userUid || 'VIV-ACCOUNT-1';
+    const userName = window.appConfig?.userCn || 'Kate Crestwell';
+    const userLocation = (window.appConfig?.userLocation || '10 Downing Street, London, SW1A 2AA').replace(/[[\]]/g, '');
+
+    return (
+        <ThemeProvider theme={themes.light}>
+            <GlobalStyle />
+            <AppWrapper>
+                <GreetingBanner
+                    userName={userName}
+                    customerId={userId}
+                    userAddress={userLocation}
+                />
+            </AppWrapper>
+        </ThemeProvider>
+    );
+};
 
 export default App;

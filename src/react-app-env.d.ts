@@ -1,1 +1,11 @@
-/// <reference types="react-scripts" />
+export { };
+
+declare global {
+    interface Window {
+        appConfig?: {
+            userUid: string;
+            userCn: string;
+            userLocation: string;
+        };
+    }
+}
