@@ -1,8 +1,9 @@
 import React from 'react';
-import styled, { ThemeProvider } from 'styled-components';
-import { GlobalStyle } from './styles/globalStyles';
-import { themes } from './styles/theme';
+import styled, {ThemeProvider} from 'styled-components';
+import {GlobalStyle} from './styles/globalStyles';
+import {themes} from './styles/theme';
 import GreetingBanner from './components/GreetingBanner/GreetingBanner';
+import {defaultUser} from './constants/users';
 
 const AppWrapper = styled.div`
     text-align: center;
@@ -10,12 +11,12 @@ const AppWrapper = styled.div`
 
 const App: React.FC = () => {
     const userId = window.appConfig?.userUid || 'VIV-ACCOUNT-1';
-    const userName = window.appConfig?.userCn || 'Kate Crestwell';
+    const userName = window.appConfig?.userCn || defaultUser.displayName;
     const userLocation = (window.appConfig?.userLocation || '10 Downing Street, London, SW1A 2AA').replace(/[[\]]/g, '');
 
     return (
         <ThemeProvider theme={themes.light}>
-            <GlobalStyle />
+            <GlobalStyle/>
             <AppWrapper>
                 <GreetingBanner
                     userName={userName}

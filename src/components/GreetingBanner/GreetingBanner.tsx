@@ -3,6 +3,7 @@ import styled, {css, keyframes} from 'styled-components';
 import {greetingTexts} from '../../constants/greetings';
 import Tooltip from '../Tooltip/Tooltip';
 import PencilIcon from '../../assets/icons/PencilIcon';
+import {useUserDetails} from '../../hooks/useUserDetails';
 
 const fadeIn = keyframes`
     from {
@@ -36,12 +37,14 @@ const slideUpFadeIn = keyframes`
 `;
 
 const textEntranceAnimation = css<{ $initialLoad: boolean }>`
-    ${({$initialLoad}) => !$initialLoad && css`
-        animation-name: ${slideUpFadeIn};
-        animation-duration: 400ms;
-        animation-timing-function: ease-out;
-        animation-fill-mode: both;
-    `}
+    ${({$initialLoad}) =>
+            !$initialLoad &&
+            css`
+                animation-name: ${slideUpFadeIn};
+                animation-duration: 400ms;
+                animation-timing-function: ease-out;
+                animation-fill-mode: both;
+            `}
 `;
 
 const Header = styled.header`
@@ -53,7 +56,6 @@ const Header = styled.header`
     justify-content: space-between;
     box-sizing: border-box;
     animation: ${fadeIn} 200ms ease-out;
-    overflow: hidden;
 `;
 
 const Avatar = styled.img<{ $initialLoad: boolean }>`
@@ -64,12 +66,14 @@ const Avatar = styled.img<{ $initialLoad: boolean }>`
     border: 2px solid ${({theme}) => theme.colors.primary};
     box-sizing: border-box;
 
-    ${({$initialLoad}) => !$initialLoad && css`
-        animation-name: ${scaleIn};
-        animation-duration: 400ms;
-        animation-timing-function: ease-out;
-        animation-fill-mode: both;
-    `}
+    ${({$initialLoad}) =>
+            !$initialLoad &&
+            css`
+                animation-name: ${scaleIn};
+                animation-duration: 400ms;
+                animation-timing-function: ease-out;
+                animation-fill-mode: both;
+            `}
     &:hover {
         box-shadow: 0 0 10px ${({theme}) => theme.colors.primary};
     }
@@ -136,9 +140,19 @@ interface GreetingBannerProps {
     userAddress: string;
 }
 
-const GreetingBanner: React.FC<GreetingBannerProps> = ({userName, customerId, userAddress}) => {
+const GreetingBanner: React.FC<GreetingBannerProps> = ({
+                                                           userName,
+                                                           customerId,
+                                                           userAddress,
+                                                       }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const [hasDoneEntrance, setHasDoneEntrance] = useState(false);
+    const {
+        displayName,
+        avatarUrl,
+        displayCustomerId,
+        displayUserAddress,
+    } = useUserDetails(userName, customerId, userAddress);
 
     useEffect(() => {
         const entranceTimer = setTimeout(() => {
@@ -153,22 +167,36 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({userName, customerId, us
     const handleMouseEnter = () => setShowTooltip(true);
     const handleMouseLeave = () => setShowTooltip(false);
 
+    const profileContainerProps = displayUserAddress ? {
+        onMouseEnter: handleMouseEnter,
+        onMouseLeave: handleMouseLeave
+    } : {};
+
     return (
         <Header>
-            <ProfileContainer onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+            <ProfileContainer {...profileContainerProps}>
                 <Avatar
-                    src={'https://vivre.woodburn.digital/dx/api/dam/v1/collections/b5ada47f-3a8d-42e9-b3c2-6a436f3359e3/items/6adba40e-4c02-4122-925c-4014c7421d17/renditions/2ec7d776-c9d9-40c9-83cc-1558e7896ba6?binary=true'}
+                    src={avatarUrl}
                     alt="Profile"
                     $initialLoad={hasDoneEntrance}
                 />
                 <UserInfo>
-                    <Greeting $initialLoad={hasDoneEntrance}>{greetingTexts.welcomeBack}</Greeting>
+                    <Greeting $initialLoad={hasDoneEntrance}>
+                        {greetingTexts.welcomeBack}
+                    </Greeting>
                     <UserName $initialLoad={hasDoneEntrance}>
-                        {userName}
+                        {displayName}
                     </UserName>
-                    <CustomerId $initialLoad={hasDoneEntrance}>{greetingTexts.customerIdPrefix}{customerId}</CustomerId>
+                    {displayCustomerId && (
+                        <CustomerId $initialLoad={hasDoneEntrance}>
+                            {greetingTexts.customerIdPrefix}
+                            {displayCustomerId}
+                        </CustomerId>
+                    )}
                 </UserInfo>
-                <Tooltip text={userAddress} isVisible={showTooltip}/>
+                {displayUserAddress && (
+                    <Tooltip text={displayUserAddress} isVisible={showTooltip}/>
+                )}
             </ProfileContainer>
             <ActionButton>
                 <PencilIcon/>
