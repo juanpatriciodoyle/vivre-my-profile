@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import styled, {css, keyframes} from 'styled-components';
 import {greetingTexts} from '../../constants/greetings';
-import pencilIcon from '../../assets/icons/pencil.svg';
 import Tooltip from '../Tooltip/Tooltip';
+import PencilIcon from '../../assets/icons/PencilIcon';
 
 const fadeIn = keyframes`
     from {
@@ -53,6 +53,7 @@ const Header = styled.header`
     justify-content: space-between;
     box-sizing: border-box;
     animation: ${fadeIn} 200ms ease-out;
+    overflow: hidden;
 `;
 
 const Avatar = styled.img<{ $initialLoad: boolean }>`
@@ -121,11 +122,6 @@ const ActionButton = styled.button`
     &:hover {
         background-color: ${({theme}) => theme.colors.secondaryAction};
     }
-
-    img {
-        width: 24px;
-        height: 24px;
-    }
 `;
 
 const ProfileContainer = styled.div`
@@ -175,7 +171,7 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({userName, customerId, us
                 <Tooltip text={userAddress} isVisible={showTooltip}/>
             </ProfileContainer>
             <ActionButton>
-                <img src={pencilIcon} alt="Edit Profile"/>
+                <PencilIcon/>
             </ActionButton>
         </Header>
     );
