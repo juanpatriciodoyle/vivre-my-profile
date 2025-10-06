@@ -3,9 +3,9 @@ import styled from 'styled-components';
 
 const TooltipWrapper = styled.div<{ $isVisible: boolean }>`
     position: absolute;
-    bottom: -45px;
+    top: -45px;
     left: 50%;
-    transform: ${({$isVisible}) => $isVisible ? 'translateX(-50%)' : 'translateX(-50%) translateY(10px)'};
+    transform: ${({$isVisible}) => $isVisible ? 'translateX(-50%)' : 'translateX(-50%) translateY(-10px)'};
     background-color: ${({theme}) => theme.colors.textHeadings};
     color: ${({theme}) => theme.colors.subtleBackground};
     padding: 8px 12px;
@@ -22,12 +22,12 @@ const TooltipWrapper = styled.div<{ $isVisible: boolean }>`
     &::before {
         content: '';
         position: absolute;
-        top: -5px;
+        bottom: -5px;
         left: 50%;
         transform: translateX(-50%);
-        border-width: 0 5px 5px;
+        border-width: 5px 5px 0;
         border-style: solid;
-        border-color: transparent transparent ${({theme}) => theme.colors.textHeadings};
+        border-color: ${({theme}) => theme.colors.textHeadings} transparent transparent;
     }
 `;
 
