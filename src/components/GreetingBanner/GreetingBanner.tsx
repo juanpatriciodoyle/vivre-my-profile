@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styled, {css, keyframes} from 'styled-components';
 import {greetingTexts} from '../../constants/greetings';
 import PencilIcon from '../../assets/icons/PencilIcon';
 import {useUserDetails} from '../../hooks/useUserDetails';
+import {useParallax} from '../../hooks/useParallax';
 
 const fadeIn = keyframes`
     from {
@@ -64,6 +65,8 @@ const Avatar = styled.img<{ $initialLoad: boolean }>`
     object-fit: cover;
     border: 2px solid ${({theme}) => theme.colors.primary};
     box-sizing: border-box;
+    transition: transform 0.1s ease-out;
+    transform-style: preserve-3d;
 
     ${({$initialLoad}) =>
             !$initialLoad &&
@@ -73,9 +76,6 @@ const Avatar = styled.img<{ $initialLoad: boolean }>`
                 animation-timing-function: ease-out;
                 animation-fill-mode: both;
             `}
-    &:hover {
-        box-shadow: 0 0 10px ${({theme}) => theme.colors.primary};
-    }
 `;
 
 const UserInfo = styled.div`
@@ -168,6 +168,7 @@ const ProfileContainer = styled.div`
     display: flex;
     align-items: center;
     min-width: 0;
+    perspective: 1000px;
 `;
 
 interface GreetingBannerProps {
@@ -183,6 +184,9 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                                                        }) => {
     const [isAddressVisible, setIsAddressVisible] = useState(false);
     const [hasDoneEntrance, setHasDoneEntrance] = useState(false);
+
+    const avatarRef = useRef<HTMLImageElement>(null);
+    const parallaxTransform = useParallax(avatarRef, avatarRef);
 
     const {
         displayName,
@@ -217,9 +221,11 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
         <Header>
             <ProfileContainer>
                 <Avatar
+                    ref={avatarRef}
                     src={avatarUrl}
                     alt="Profile"
                     $initialLoad={hasDoneEntrance}
+                    style={{transform: parallaxTransform}}
                 />
                 <UserInfo>
                     <Greeting $initialLoad={hasDoneEntrance}>
