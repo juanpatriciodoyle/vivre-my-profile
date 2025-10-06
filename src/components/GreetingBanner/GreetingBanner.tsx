@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styled, {css, keyframes} from 'styled-components';
 import {greetingTexts} from '../../constants/greetings';
-import Tooltip from '../Tooltip/Tooltip';
 import PencilIcon from '../../assets/icons/PencilIcon';
 import {useUserDetails} from '../../hooks/useUserDetails';
 
@@ -83,6 +82,7 @@ const UserInfo = styled.div`
     display: flex;
     flex-direction: column;
     margin-left: 24px;
+    overflow: hidden;
 `;
 
 const Greeting = styled.h3<{ $initialLoad: boolean }>`
@@ -103,12 +103,48 @@ const UserName = styled.h1<{ $initialLoad: boolean }>`
     ${textEntranceAnimation};
 `;
 
-const CustomerId = styled.p<{ $initialLoad: boolean }>`
-    margin: 4px 0 0;
+const CustomerIdWrapper = styled.div<{ $isInteractive: boolean }>`
+    margin-top: 4px;
+    line-height: 1.4;
+    position: relative;
+    height: 1.4em;
+
+    ${({$isInteractive}) =>
+            $isInteractive &&
+            css`
+                cursor: pointer;
+            `}
+`;
+
+const CustomerIdText = styled.p<{ $revealed: boolean; $initialLoad: boolean; }>`
+    margin: 0;
     font-size: ${({theme}) => theme.font.sizes.subtext};
     color: ${({theme}) => theme.colors.textBody};
+    opacity: ${({$revealed}) => ($revealed ? 0 : 1)};
+    transition: opacity 0.2s ease-in-out;
+    animation: ${({$initialLoad}) =>
+            !$initialLoad ? slideUpFadeIn : 'none'} 400ms ease-out both;
     animation-delay: 400ms;
-    ${textEntranceAnimation};
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+`;
+
+const AddressText = styled.p<{ $revealed: boolean }>`
+    margin: 0;
+    font-size: ${({theme}) => theme.font.sizes.subtext};
+    color: ${({theme}) => theme.colors.textBody};
+    opacity: ${({$revealed}) => ($revealed ? 1 : 0)};
+    transition: opacity 0.2s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
 `;
 
 const ActionButton = styled.button`
@@ -131,7 +167,7 @@ const ActionButton = styled.button`
 const ProfileContainer = styled.div`
     display: flex;
     align-items: center;
-    position: relative;
+    min-width: 0;
 `;
 
 interface GreetingBannerProps {
@@ -145,8 +181,9 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                                                            customerId,
                                                            userAddress,
                                                        }) => {
-    const [showTooltip, setShowTooltip] = useState(false);
+    const [isAddressVisible, setIsAddressVisible] = useState(false);
     const [hasDoneEntrance, setHasDoneEntrance] = useState(false);
+
     const {
         displayName,
         avatarUrl,
@@ -164,17 +201,21 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
         };
     }, []);
 
-    const handleMouseEnter = () => setShowTooltip(true);
-    const handleMouseLeave = () => setShowTooltip(false);
+    const handleMouseEnter = () => {
+        if (displayUserAddress) {
+            setIsAddressVisible(true);
+        }
+    };
 
-    const profileContainerProps = displayUserAddress ? {
-        onMouseEnter: handleMouseEnter,
-        onMouseLeave: handleMouseLeave
-    } : {};
+    const handleMouseLeave = () => {
+        if (displayUserAddress) {
+            setIsAddressVisible(false);
+        }
+    };
 
     return (
         <Header>
-            <ProfileContainer {...profileContainerProps}>
+            <ProfileContainer>
                 <Avatar
                     src={avatarUrl}
                     alt="Profile"
@@ -188,15 +229,24 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                         {displayName}
                     </UserName>
                     {displayCustomerId && (
-                        <CustomerId $initialLoad={hasDoneEntrance}>
-                            {greetingTexts.customerIdPrefix}
-                            {displayCustomerId}
-                        </CustomerId>
+                        <CustomerIdWrapper
+                            $isInteractive={!!displayUserAddress}
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                        >
+                            <CustomerIdText
+                                $revealed={isAddressVisible}
+                                $initialLoad={hasDoneEntrance}
+                            >
+                                {greetingTexts.customerIdPrefix}
+                                {displayCustomerId}
+                            </CustomerIdText>
+                            <AddressText $revealed={isAddressVisible}>
+                                {displayUserAddress}
+                            </AddressText>
+                        </CustomerIdWrapper>
                     )}
                 </UserInfo>
-                {displayUserAddress && (
-                    <Tooltip text={displayUserAddress} isVisible={showTooltip}/>
-                )}
             </ProfileContainer>
             <ActionButton>
                 <PencilIcon/>

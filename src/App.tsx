@@ -19,7 +19,7 @@ const App: React.FC = () => {
             <GlobalStyle/>
             <AppWrapper>
                 <GreetingBanner
-                    userName={userName}
+                    userName={"Kate Crestwell"}
                     customerId={userId}
                     userAddress={userLocation}
                 />
