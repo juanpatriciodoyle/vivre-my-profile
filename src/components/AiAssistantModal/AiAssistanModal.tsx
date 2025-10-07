@@ -131,6 +131,7 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({isOpen, onClo
                         <Step4FinalPlan planClosesAmount={planClosesAmount} shortfall={shortfall}
                                         onNext={() => paginate(1)}/>}
                     {currentStep === 4 && <Step5ActionPlan plan={{contributionIncrease, strategy, includeDormant}}
+                                                           initialProjection={initialProjection}
                                                            onClose={handleClose}/>}
                 </StepWrapper>
             </AnimatePresence>

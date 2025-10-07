@@ -6,7 +6,7 @@ import {formatCurrency} from '../../../utils/financialCalculations';
 import {PrimaryButton} from '../shared';
 import PhoneIcon from '../../../assets/icons/PhoneIcon';
 import DocumentIcon from '../../../assets/icons/DocumentIcon';
-import BankIcon from '../../../assets/icons/BankIcon';
+import NewBankIcon from '../../../assets/icons/NewBankIcon';
 
 const StepContainer = styled(motion.div)` text-align: center; `;
 const Title = styled.h2` margin: 0 0 16px; `;
@@ -55,11 +55,29 @@ interface Step5Props {
         includeDormant: boolean;
     };
     onClose: () => void;
+    initialProjection: number;
 }
 
 const texts = modalTexts.step5;
 
-export const Step5ActionPlan: React.FC<Step5Props> = ({plan, onClose}) => {
+export const Step5ActionPlan: React.FC<Step5Props> = ({plan, onClose, initialProjection}) => {
+    const noActionTaken = plan.contributionIncrease === 0 && plan.strategy === 'balanced' && !plan.includeDormant;
+
+    if (noActionTaken) {
+        return (
+            <StepContainer initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: 0.5, delay: 0.3}}>
+                <Title>{texts.zeroAction.title}</Title>
+                <IntroText>{texts.zeroAction.intro(formatCurrency(initialProjection))}</IntroText>
+                <ActionCard>
+                    <ActionHeader>
+                        <span>{texts.zeroAction.action}</span>
+                    </ActionHeader>
+                </ActionCard>
+                <PrimaryButton style={{marginTop: '32px'}} onClick={onClose}>{texts.zeroAction.button}</PrimaryButton>
+            </StepContainer>
+        )
+    }
+
     return (
         <StepContainer initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: 0.5, delay: 0.3}}>
             <Title>{texts.title}</Title>
@@ -67,7 +85,7 @@ export const Step5ActionPlan: React.FC<Step5Props> = ({plan, onClose}) => {
 
             {plan.contributionIncrease > 0 && (
                 <ActionCard>
-                    <ActionHeader><BankIcon/>
+                    <ActionHeader><NewBankIcon/>
                         <span>{texts.contributionAction(formatCurrency(plan.contributionIncrease))}</span></ActionHeader>
                 </ActionCard>
             )}

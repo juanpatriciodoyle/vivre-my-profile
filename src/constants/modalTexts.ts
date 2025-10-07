@@ -72,5 +72,11 @@ export const modalTexts = {
         phoneLink: "Call an advisor now",
         articleLink: "Read article",
         finishButton: "All Done, Thank You!",
+        zeroAction: {
+            title: "Your Current Plan Confirmed",
+            intro: (projection: string) => `Excellent. You've confirmed your retirement plan based on the latest official Irish data. Your current approach is projected to achieve a final pot of ${projection}.`,
+            action: "Save Your Forecast: Add your personalised retirement forecast to your dashboard to track your progress and receive alerts if your goal changes.",
+            button: "Go to Dashboard"
+        }
     }
 };
