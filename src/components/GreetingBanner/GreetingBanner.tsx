@@ -1,9 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
 import styled, {css, keyframes} from 'styled-components';
 import {greetingTexts} from '../../constants/greetings';
-import PencilIcon from '../../assets/icons/PencilIcon';
+import AIIcon from '../../assets/icons/AIIcon';
 import {useUserDetails} from '../../hooks/useUserDetails';
 import {useParallax} from '../../hooks/useParallax';
+import {fetchGovData, GovData} from '../../services/govApiService';
+import {AiAssistantModal} from '../AiAssistantModal/AiAssistanModal';
 
 const fadeIn = keyframes`
     from {
@@ -158,10 +160,23 @@ const ActionButton = styled.button`
     justify-content: center;
     margin-left: auto;
     box-sizing: border-box;
+    position: relative;
 
     &:hover {
-        background-color: ${({theme}) => theme.colors.secondaryAction};
+        background-color: ${({theme}) => theme.colors.primaryTint};
     }
+`;
+
+const NotificationBadge = styled.div`
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 8px;
+    height: 8px;
+    background-color: ${({theme}) => theme.colors.primary};
+    border-radius: 50%;
+    border: 1px solid ${({theme}) => theme.colors.background};
+    box-sizing: border-box;
 `;
 
 const ProfileContainer = styled.div`
@@ -184,6 +199,9 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                                                        }) => {
     const [isAddressVisible, setIsAddressVisible] = useState(false);
     const [hasDoneEntrance, setHasDoneEntrance] = useState(false);
+    const [govData, setGovData] = useState<GovData | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [hasNotificationBeenSeen, setHasNotificationBeenSeen] = useState(false);
 
     const avatarRef = useRef<HTMLImageElement>(null);
     const parallaxTransform = useParallax(avatarRef, avatarRef);
@@ -200,10 +218,17 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
             setHasDoneEntrance(true);
         }, 2000);
 
+        const getGovData = async () => {
+            const data = await fetchGovData(userName);
+            setGovData(data);
+        };
+
+        getGovData();
+
         return () => {
             clearTimeout(entranceTimer);
         };
-    }, []);
+    }, [userName]);
 
     const handleMouseEnter = () => {
         if (displayUserAddress) {
@@ -217,47 +242,66 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
         }
     };
 
+    const handleModalOpen = () => {
+        if (govData) {
+            setIsModalOpen(true);
+            setHasNotificationBeenSeen(true);
+        }
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+    };
+
     return (
-        <Header>
-            <ProfileContainer>
-                <Avatar
-                    ref={avatarRef}
-                    src={avatarUrl}
-                    alt="Profile"
-                    $initialLoad={hasDoneEntrance}
-                    style={{transform: parallaxTransform}}
-                />
-                <UserInfo>
-                    <Greeting $initialLoad={hasDoneEntrance}>
-                        {greetingTexts.welcomeBack}
-                    </Greeting>
-                    <UserName $initialLoad={hasDoneEntrance}>
-                        {displayName}
-                    </UserName>
-                    {displayCustomerId && (
-                        <CustomerIdWrapper
-                            $isInteractive={!!displayUserAddress}
-                            onMouseEnter={handleMouseEnter}
-                            onMouseLeave={handleMouseLeave}
-                        >
-                            <CustomerIdText
-                                $revealed={isAddressVisible}
-                                $initialLoad={hasDoneEntrance}
+        <>
+            <Header>
+                <ProfileContainer>
+                    <Avatar
+                        ref={avatarRef}
+                        src={avatarUrl}
+                        alt="Profile"
+                        $initialLoad={hasDoneEntrance}
+                        style={{transform: parallaxTransform}}
+                    />
+                    <UserInfo>
+                        <Greeting $initialLoad={hasDoneEntrance}>
+                            {greetingTexts.welcomeBack}
+                        </Greeting>
+                        <UserName $initialLoad={hasDoneEntrance}>
+                            {displayName}
+                        </UserName>
+                        {displayCustomerId && (
+                            <CustomerIdWrapper
+                                $isInteractive={!!displayUserAddress}
+                                onMouseEnter={handleMouseEnter}
+                                onMouseLeave={handleMouseLeave}
                             >
-                                {greetingTexts.customerIdPrefix}
-                                {displayCustomerId}
-                            </CustomerIdText>
-                            <AddressText $revealed={isAddressVisible}>
-                                {displayUserAddress}
-                            </AddressText>
-                        </CustomerIdWrapper>
-                    )}
-                </UserInfo>
-            </ProfileContainer>
-            <ActionButton>
-                <PencilIcon/>
-            </ActionButton>
-        </Header>
+                                <CustomerIdText
+                                    $revealed={isAddressVisible}
+                                    $initialLoad={hasDoneEntrance}
+                                >
+                                    {greetingTexts.customerIdPrefix}
+                                    {displayCustomerId}
+                                </CustomerIdText>
+                                <AddressText $revealed={isAddressVisible}>
+                                    {displayUserAddress}
+                                </AddressText>
+                            </CustomerIdWrapper>
+                        )}
+                    </UserInfo>
+                </ProfileContainer>
+                <ActionButton onClick={handleModalOpen}>
+                    <AIIcon/>
+                    {govData && !hasNotificationBeenSeen && <NotificationBadge/>}
+                </ActionButton>
+            </Header>
+            <AiAssistantModal
+                isOpen={isModalOpen}
+                onClose={handleModalClose}
+                govData={govData}
+            />
+        </>
     );
 };
 
