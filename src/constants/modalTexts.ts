@@ -33,6 +33,7 @@ export const modalTexts = (country: Country) => ({
         sourceRegistry: country === 'IE' ? "Public Registry" : "General Register Office",
         dependentsLabel: "Registered Dependents",
         confirmButton: "Data is Correct, Build My Forecast",
+        editDataLink: "Something looks wrong? Let us know.",
         tooltips: {
             income: {
                 title: `Data Source: ${country === 'IE' ? "Irish Revenue" : "HMRC"}`,
@@ -78,7 +79,7 @@ export const modalTexts = (country: Country) => ({
             title: "Your Current Plan Confirmed",
             intro: (projection: string) => `Excellent. You've confirmed your retirement plan based on the latest official data. Your current approach is projected to achieve a final pot of ${projection}.`,
             action: "Save Your Forecast: Add your personalised retirement forecast to your dashboard to track your progress and receive alerts if your goal changes.",
-            button: "Go to Dashboard"
+            button: "Let's get started!",
         }
     }
 });

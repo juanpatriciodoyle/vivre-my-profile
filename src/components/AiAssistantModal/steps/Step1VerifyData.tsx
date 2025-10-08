@@ -60,6 +60,20 @@ const cardVariants: Variants = {
     }),
 };
 
+const SecondaryActionLink = styled.a`
+    display: block;
+    margin-top: 16px;
+    color: ${({theme}) => theme.colors.textBody};
+    font-size: ${({theme}) => theme.font.sizes.subtext};
+    text-decoration: underline;
+    cursor: pointer;
+    box-sizing: border-box;
+
+    &:hover {
+        color: ${({theme}) => theme.colors.textHeadings};
+    }
+`;
+
 interface Step1Props {
     govData: GovData;
     onNext: () => void;
@@ -106,7 +120,10 @@ export const Step1VerifyData: React.FC<Step1Props> = ({govData, onNext}) => {
                 <DataRow><DataLabel>{texts.dependentsLabel}</DataLabel><DataValue>{govData.publicRegistry.dependents}</DataValue></DataRow>
             </DataCard>
             <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{delay: 1, duration: 0.5}}>
-                <PrimaryButton style={{marginTop: '16px'}} onClick={onNext}>{texts.confirmButton}</PrimaryButton>
+                <PrimaryButton style={{marginTop: '16px', width: '100%'}}
+                               onClick={onNext}>{texts.confirmButton}</PrimaryButton>
+                <SecondaryActionLink href="#"
+                                     onClick={(e) => e.preventDefault()}>{texts.editDataLink}</SecondaryActionLink>
             </motion.div>
         </StepContainer>
     );
