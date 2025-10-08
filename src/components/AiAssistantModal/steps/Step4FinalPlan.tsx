@@ -2,9 +2,10 @@ import React from 'react';
 import styled, {keyframes} from 'styled-components';
 import {motion} from 'framer-motion';
 import {modalTexts} from '../../../constants/modalTexts';
-import {formatCurrency} from '../../../utils/financialCalculations';
 import {PrimaryButton} from '../shared';
 import {ProgressRing} from '../../ProgressRing/ProgressRing';
+import {useSettings} from "../../../utils/dx/settingsContext";
+import {useCurrency} from "../../../hooks/useCurrency";
 
 const StepContainer = styled(motion.div)` text-align: center; `;
 const Title = styled.h2` margin: 0 0 16px; `;
@@ -39,9 +40,10 @@ interface Step4Props {
     onNext: () => void;
 }
 
-const texts = modalTexts.step4;
-
 export const Step4FinalPlan: React.FC<Step4Props> = ({planClosesAmount, shortfall, onNext}) => {
+    const {settings} = useSettings();
+    const {formatCurrency} = useCurrency();
+    const texts = modalTexts(settings.country).step4;
     const percentageClosed = shortfall > 0 ? (planClosesAmount / shortfall) * 100 : 100;
     const ActionButton = percentageClosed >= 100 ? CelebratoryButton : PrimaryButton;
 

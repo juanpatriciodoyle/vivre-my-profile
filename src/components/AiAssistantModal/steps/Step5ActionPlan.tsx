@@ -2,11 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import {motion} from 'framer-motion';
 import {modalTexts} from '../../../constants/modalTexts';
-import {formatCurrency} from '../../../utils/financialCalculations';
 import {PrimaryButton} from '../shared';
 import PhoneIcon from '../../../assets/icons/PhoneIcon';
 import DocumentIcon from '../../../assets/icons/DocumentIcon';
 import NewBankIcon from '../../../assets/icons/NewBankIcon';
+import {useSettings} from "../../../utils/dx/settingsContext";
+import {useCurrency} from "../../../hooks/useCurrency";
 
 const StepContainer = styled(motion.div)` text-align: center; `;
 const Title = styled.h2` margin: 0 0 16px; `;
@@ -58,9 +59,10 @@ interface Step5Props {
     initialProjection: number;
 }
 
-const texts = modalTexts.step5;
-
 export const Step5ActionPlan: React.FC<Step5Props> = ({plan, onClose, initialProjection}) => {
+    const {settings} = useSettings();
+    const {formatCurrency} = useCurrency();
+    const texts = modalTexts(settings.country).step5;
     const noActionTaken = plan.contributionIncrease === 0 && plan.strategy === 'balanced' && !plan.includeDormant;
 
     if (noActionTaken) {

@@ -7,8 +7,9 @@ import RevenueIcon from '../../../assets/icons/RevenueIcon';
 import DspIcon from '../../../assets/icons/DspIcon';
 import GovBuildingIcon from '../../../assets/icons/GovBuildingIcon';
 import {PrimaryButton} from '../shared';
-import {formatCurrency} from '../../../utils/financialCalculations';
 import Tooltip from '../../InfoTooltip/InfoTooltip';
+import {useSettings} from "../../../utils/dx/settingsContext";
+import {useCurrency} from "../../../hooks/useCurrency";
 
 const StepContainer = styled.div` text-align: center; `;
 const Title = styled.h2` margin: 0 0 16px; `;
@@ -64,45 +65,49 @@ interface Step1Props {
     onNext: () => void;
 }
 
-const texts = modalTexts.step1;
+export const Step1VerifyData: React.FC<Step1Props> = ({govData, onNext}) => {
+    const {settings} = useSettings();
+    const {formatCurrency} = useCurrency();
+    const texts = modalTexts(settings.country).step1;
 
-export const Step1VerifyData: React.FC<Step1Props> = ({govData, onNext}) => (
-    <StepContainer>
-        <Title>{texts.title}</Title>
-        <IntroText>{texts.intro}</IntroText>
-        <DataCard custom={1} initial="hidden" animate="visible" variants={cardVariants}>
-            <SourceHeader><RevenueIcon/><span>{texts.sourceRevenue}</span></SourceHeader>
-            <DataRow>
-                <DataLabelContainer>
-                    <DataLabel>{texts.incomeLabel}</DataLabel>
-                    <Tooltip {...texts.tooltips.income} />
-                </DataLabelContainer>
-                <DataValue>{formatCurrency(govData.revenue.annualIncome)}</DataValue>
-            </DataRow>
-            <DataRow>
-                <DataLabelContainer>
-                    <DataLabel>{texts.pensionContributionsLabel}</DataLabel>
-                    <Tooltip {...texts.tooltips.income} />
-                </DataLabelContainer>
-                <DataValue>{formatCurrency(govData.revenue.pensionContributionsYTD)}</DataValue>
-            </DataRow>
-        </DataCard>
-        <DataCard custom={2} initial="hidden" animate="visible" variants={cardVariants}>
-            <SourceHeader><DspIcon/><span>{texts.sourceDsp}</span></SourceHeader>
-            <DataRow>
-                <DataLabelContainer>
-                    <DataLabel>{texts.statePensionLabel}</DataLabel>
-                    <Tooltip {...texts.tooltips.dsp} />
-                </DataLabelContainer>
-                <DataValue>{formatCurrency(govData.socialProtection.projectedStatePension)} / week</DataValue>
-            </DataRow>
-        </DataCard>
-        <DataCard custom={3} initial="hidden" animate="visible" variants={cardVariants}>
-            <SourceHeader><GovBuildingIcon/><span>{texts.sourceRegistry}</span></SourceHeader>
-            <DataRow><DataLabel>{texts.dependentsLabel}</DataLabel><DataValue>{govData.publicRegistry.dependents}</DataValue></DataRow>
-        </DataCard>
-        <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{delay: 1, duration: 0.5}}>
-            <PrimaryButton style={{marginTop: '16px'}} onClick={onNext}>{texts.confirmButton}</PrimaryButton>
-        </motion.div>
-    </StepContainer>
-);
+    return (
+        <StepContainer>
+            <Title>{texts.title}</Title>
+            <IntroText>{texts.intro}</IntroText>
+            <DataCard custom={1} initial="hidden" animate="visible" variants={cardVariants}>
+                <SourceHeader><RevenueIcon/><span>{texts.sourceRevenue}</span></SourceHeader>
+                <DataRow>
+                    <DataLabelContainer>
+                        <DataLabel>{texts.incomeLabel}</DataLabel>
+                        <Tooltip {...texts.tooltips.income} />
+                    </DataLabelContainer>
+                    <DataValue>{formatCurrency(govData.revenue.annualIncome)}</DataValue>
+                </DataRow>
+                <DataRow>
+                    <DataLabelContainer>
+                        <DataLabel>{texts.pensionContributionsLabel}</DataLabel>
+                        <Tooltip {...texts.tooltips.income} />
+                    </DataLabelContainer>
+                    <DataValue>{formatCurrency(govData.revenue.pensionContributionsYTD)}</DataValue>
+                </DataRow>
+            </DataCard>
+            <DataCard custom={2} initial="hidden" animate="visible" variants={cardVariants}>
+                <SourceHeader><DspIcon/><span>{texts.sourceDsp}</span></SourceHeader>
+                <DataRow>
+                    <DataLabelContainer>
+                        <DataLabel>{texts.statePensionLabel}</DataLabel>
+                        <Tooltip {...texts.tooltips.dsp} />
+                    </DataLabelContainer>
+                    <DataValue>{formatCurrency(govData.socialProtection.projectedStatePension)} / week</DataValue>
+                </DataRow>
+            </DataCard>
+            <DataCard custom={3} initial="hidden" animate="visible" variants={cardVariants}>
+                <SourceHeader><GovBuildingIcon/><span>{texts.sourceRegistry}</span></SourceHeader>
+                <DataRow><DataLabel>{texts.dependentsLabel}</DataLabel><DataValue>{govData.publicRegistry.dependents}</DataValue></DataRow>
+            </DataCard>
+            <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{delay: 1, duration: 0.5}}>
+                <PrimaryButton style={{marginTop: '16px'}} onClick={onNext}>{texts.confirmButton}</PrimaryButton>
+            </motion.div>
+        </StepContainer>
+    );
+};

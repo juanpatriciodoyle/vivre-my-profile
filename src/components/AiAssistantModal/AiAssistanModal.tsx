@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import styled from 'styled-components';
+import styled, {keyframes} from 'styled-components';
 import {AnimatePresence, motion} from 'framer-motion';
 import Modal from '../Modal/Modal';
 import Stepper from '../Stepper/Stepper';
-import {GovData} from '../../services/govApiService';
+import {fetchGovData, GovData} from '../../services/govApiService';
 import {CsoData, fetchCsoData} from '../../services/csoService';
 import {projectPensionGrowth} from '../../utils/financialCalculations';
 import {modalTexts} from '../../constants/modalTexts';
@@ -13,6 +13,9 @@ import {investmentStrategies, Step3CloseTheGap} from './steps/Step3CloseTheGap';
 import {Step4FinalPlan} from './steps/Step4FinalPlan';
 import {Step5ActionPlan} from './steps/Step5ActionPlan';
 import {GapChart} from '../BarChart/BarChart';
+import {useSettings} from '../../utils/dx/settingsContext';
+import {defaultUser} from "../../constants/users";
+import LiveSignalIcon from "../../assets/icons/LiveSignalIcon";
 
 const stepVariants = {
     hidden: {opacity: 0, x: 50},
@@ -26,6 +29,27 @@ const StepWrapper = styled(motion.div)`
     }
 `;
 
+const pulse = keyframes`
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+`;
+
+const LoadingContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    gap: 12px;
+    color: ${({theme}) => theme.colors.textBody};
+    animation: ${pulse} 1.5s ease-in-out infinite;
+`;
+
+
 interface Goal {
     label: string;
     amount: number;
@@ -34,12 +58,15 @@ interface Goal {
 interface AiAssistantModalProps {
     isOpen: boolean;
     onClose: () => void;
-    govData: GovData | null;
 }
 
-export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({isOpen, onClose, govData}) => {
-    const [[currentStep, direction], setCurrentStep] = useState([0, 0]);
+export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({isOpen, onClose}) => {
+    const {settings} = useSettings();
+    const [govData, setGovData] = useState<GovData | null>(null);
     const [csoData, setCsoData] = useState<CsoData | null>(null);
+    const texts = modalTexts(settings.country);
+
+    const [[currentStep, direction], setCurrentStep] = useState([0, 0]);
     const [initialProjection, setInitialProjection] = useState<number>(0);
     const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
     const [contributionIncrease, setContributionIncrease] = useState(0);
@@ -48,14 +75,34 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({isOpen, onClo
     const [animationType, setAnimationType] = useState<'smooth' | 'pop'>('smooth');
 
     useEffect(() => {
-        if (isOpen && govData && !csoData) {
-            fetchCsoData().then(data => {
-                setCsoData(data);
-                const currentMonthlyContribution = govData.revenue.pensionContributionsYTD / 12;
-                setInitialProjection(projectPensionGrowth(currentMonthlyContribution, data.inflationRate, data.wageGrowthRate, 0.05));
+        if (isOpen) {
+            setGovData(null);
+            setCsoData(null);
+            let userName = window.appConfig?.userCn || defaultUser.displayName;
+            if (userName.startsWith('[Plugin:')) {
+                userName = defaultUser.displayName;
+            }
+            fetchGovData(userName, settings.country).then(data => {
+                setGovData(data);
             });
         }
-    }, [isOpen, govData, csoData]);
+    }, [isOpen, settings.country]);
+
+    useEffect(() => {
+        if (govData) {
+            fetchCsoData(settings.country).then(data => {
+                setCsoData(data);
+                const currentMonthlyContribution = govData.revenue.pensionContributionsYTD / 12;
+                const projection = projectPensionGrowth(
+                    currentMonthlyContribution,
+                    data.inflationRate,
+                    data.wageGrowthRate,
+                    0.05
+                );
+                setInitialProjection(projection);
+            });
+        }
+    }, [govData, settings.country]);
 
     const newProjection = csoData && govData ? projectPensionGrowth(
         (govData.revenue.pensionContributionsYTD / 12) + contributionIncrease,
@@ -81,13 +128,13 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({isOpen, onClo
             setContributionIncrease(0);
             setStrategy('balanced');
             setIncludeDormant(false);
+            setGovData(null);
+            setCsoData(null);
         }, 500);
     }
 
-    if (!govData) return null;
-
-    const steps = modalTexts.stepper;
-    const isDataLoading = !csoData;
+    const steps = texts.stepper;
+    const isDataLoading = !govData || !csoData;
 
     return (
         <Modal isOpen={isOpen} onClose={handleClose}>
@@ -107,8 +154,16 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({isOpen, onClo
             <AnimatePresence initial={false} custom={direction} mode="wait">
                 <StepWrapper key={currentStep} custom={direction} variants={stepVariants} initial="hidden"
                              animate="visible" exit="exit" transition={{duration: 0.4}}>
-                    {currentStep === 0 && <Step1VerifyData govData={govData} onNext={() => paginate(1)}/>}
-                    {currentStep === 1 && !isDataLoading &&
+                    {isDataLoading && (
+                        <LoadingContainer>
+                            <LiveSignalIcon/>
+                            <p>Synchronizing your latest data...</p>
+                        </LoadingContainer>
+                    )}
+
+                    {!isDataLoading && currentStep === 0 &&
+                        <Step1VerifyData govData={govData} onNext={() => paginate(1)}/>}
+                    {!isDataLoading && currentStep === 1 &&
                         <Step2DefineGoal
                             projection={initialProjection}
                             selectedGoal={selectedGoal}
@@ -116,7 +171,7 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({isOpen, onClo
                             onNext={() => paginate(1)}
                             animationType={animationType}
                         />}
-                    {currentStep === 2 && !isDataLoading && selectedGoal && (
+                    {!isDataLoading && currentStep === 2 && selectedGoal && (
                         <Step3CloseTheGap
                             onNext={() => paginate(1)}
                             contributionIncrease={contributionIncrease}
@@ -127,12 +182,13 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({isOpen, onClo
                             setAnimationType={setAnimationType}
                         />
                     )}
-                    {currentStep === 3 && !isDataLoading && selectedGoal &&
+                    {!isDataLoading && currentStep === 3 && selectedGoal &&
                         <Step4FinalPlan planClosesAmount={planClosesAmount} shortfall={shortfall}
                                         onNext={() => paginate(1)}/>}
-                    {currentStep === 4 && <Step5ActionPlan plan={{contributionIncrease, strategy, includeDormant}}
-                                                           initialProjection={initialProjection}
-                                                           onClose={handleClose}/>}
+                    {!isDataLoading && currentStep === 4 &&
+                        <Step5ActionPlan plan={{contributionIncrease, strategy, includeDormant}}
+                                         initialProjection={initialProjection}
+                                         onClose={handleClose}/>}
                 </StepWrapper>
             </AnimatePresence>
         </Modal>

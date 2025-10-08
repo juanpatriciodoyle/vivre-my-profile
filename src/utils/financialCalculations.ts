@@ -40,11 +40,10 @@ export const projectSavingsGrowth = (
     return initialInvestment * Math.pow(1 + realAnnualReturn, SAVINGS_PROJECTION_YEARS);
 };
 
-
-export const formatCurrency = (value: number): string => {
-    return new Intl.NumberFormat('en-GB', {
+export const formatCurrency = (value: number, currency: 'GBP' | 'EUR'): string => {
+    return new Intl.NumberFormat(currency === 'GBP' ? 'en-GB' : 'en-IE', {
         style: 'currency',
-        currency: 'GBP',
+        currency: currency,
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
     }).format(value);

@@ -8,6 +8,7 @@ const ThemeSelectorContainer = styled.div`
     gap: 12px;
     border: 1px solid ${({theme}) => theme.colors.borders};
     border-radius: ${({theme}) => theme.sizing.borderRadius.buttons};
+    background-color: ${({theme}) => theme.colors.subtleBackground};
     padding: 4px;
 `;
 

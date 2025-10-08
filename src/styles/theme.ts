@@ -30,14 +30,13 @@ const commonColors = {
     primary: '#4f9a7c',
     primaryHover: '#428168',
     primaryTint: '#e4f2ed',
-    secondaryAction: '#E5F0FF',
-    secondaryHover: '#C1CDDE',
     success: '#00B74A',
     warning: '#ffa503',
     error: '#d00a74',
     successTint: '#E5F8ED',
     warningTint: '#FFF6E6',
     errorTint: '#FBE5F1',
+    dark: '#1d1f1d',
 };
 
 export interface VivreTheme {
@@ -48,7 +47,6 @@ export interface VivreTheme {
         primaryHover: string;
         primaryTint: string;
         secondaryAction: string;
-        secondaryHover: string;
         background: string;
         subtleBackground: string;
         textHeadings: string;
@@ -60,6 +58,7 @@ export interface VivreTheme {
         successTint: string;
         warningTint: string;
         errorTint: string;
+        dark: string;
     };
 }
 
@@ -72,6 +71,7 @@ const light: VivreTheme = {
         textHeadings: '#1D1D1F',
         textBody: '#545454',
         borders: '#D1D1D6',
+        secondaryAction: '#e4f2ed',
     },
 };
 
@@ -84,6 +84,7 @@ const dark: VivreTheme = {
         textHeadings: '#F5F5F7',
         textBody: '#B9B9BE',
         borders: '#6A6A6A',
+        secondaryAction: '#2c3730',
     },
 };
 

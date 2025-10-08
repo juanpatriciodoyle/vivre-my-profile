@@ -2,9 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import {AnimatePresence, motion} from 'framer-motion';
 import {modalTexts, retirementGoals} from '../../../constants/modalTexts';
-import {formatCurrency} from '../../../utils/financialCalculations';
 import {PrimaryButton} from '../shared';
 import {GapChart} from '../../BarChart/BarChart';
+import {useSettings} from "../../../utils/dx/settingsContext";
+import {useCurrency} from "../../../hooks/useCurrency";
 
 const StepContainer = styled.div` text-align: center; `;
 
@@ -15,7 +16,7 @@ const GoalButton = styled.button<{ $isSelected: boolean }>`
     background-color: ${({
                              theme,
                              $isSelected
-                         }) => $isSelected ? theme.colors.primaryTint : theme.colors.subtleBackground};
+                         }) => $isSelected ? theme.colors.secondaryAction : theme.colors.subtleBackground};
     border: 1px solid ${({theme, $isSelected}) => $isSelected ? theme.colors.primary : theme.colors.borders};
     color: ${({theme, $isSelected}) => $isSelected ? theme.colors.textHeadings : theme.colors.textBody};
     font-weight: ${({theme}) => theme.font.weights.medium};
@@ -61,8 +62,6 @@ interface Step2Props {
     animationType: 'smooth' | 'pop';
 }
 
-const texts = modalTexts.step2;
-
 export const Step2DefineGoal: React.FC<Step2Props> = ({
                                                           projection,
                                                           selectedGoal,
@@ -70,6 +69,9 @@ export const Step2DefineGoal: React.FC<Step2Props> = ({
                                                           onNext,
                                                           animationType
                                                       }) => {
+    const {settings} = useSettings();
+    const {formatCurrency} = useCurrency();
+    const texts = modalTexts(settings.country).step2;
     const shortfall = selectedGoal ? selectedGoal.amount - projection : 0;
 
     return (

@@ -1,8 +1,7 @@
 import React from 'react';
-import {CURRENCIES, DEFAULT_CURRENCY, DEFAULT_THEME, MODAL_DATA, THEMES} from './dx-data';
+import {COUNTRIES, DEFAULT_COUNTRY, DEFAULT_THEME, MODAL_DATA, THEMES} from './dx-data';
 import {Settings} from './types';
 import ThemeSelector from '../../components/ThemeSelector';
-import CurrencySelector from '../../components/CurrencySelector';
 
 export interface SettingConfig<K extends keyof Settings> {
     key: K;
@@ -20,17 +19,16 @@ const themeConfig: SettingConfig<'theme'> = {
     component: ThemeSelector,
 };
 
-const currencyConfig: SettingConfig<'currency'> = {
-    key: 'currency',
-    label: MODAL_DATA.general.currencyLabel,
-    defaultValue: DEFAULT_CURRENCY,
-    options: CURRENCIES,
-    component: CurrencySelector,
+const countryConfig: SettingConfig<'country'> = {
+    key: 'country',
+    label: MODAL_DATA.general.countryLabel,
+    defaultValue: DEFAULT_COUNTRY,
+    options: COUNTRIES,
 };
 
 export const settingsConfig = {
     theme: themeConfig,
-    currency: currencyConfig,
+    country: countryConfig,
 };
 
 export const settingsConfigArray = Object.values(settingsConfig);

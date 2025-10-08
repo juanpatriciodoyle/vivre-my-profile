@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {motion} from 'framer-motion';
+import {useCurrency} from "../../hooks/useCurrency";
 
 const StepperWrapper = styled.div`
     display: flex;
@@ -52,6 +53,7 @@ const StepperInput: React.FC<StepperInputProps> = ({
                                                        onValueChange,
                                                        'aria-labelledby': labelledby
                                                    }) => {
+    const {currencySymbol} = useCurrency();
     const handleIncrement = () => onValueChange(Math.min(max, value + step));
     const handleDecrement = () => onValueChange(Math.max(min, value - step));
 
@@ -59,7 +61,7 @@ const StepperInput: React.FC<StepperInputProps> = ({
         <StepperWrapper role="group" aria-labelledby={labelledby}>
             <ControlButton onClick={handleDecrement} disabled={value <= min} whileTap={{scale: 0.9}}
                            aria-label="Decrease value">-</ControlButton>
-            <ValueDisplay aria-live="polite">+£{value}</ValueDisplay>
+            <ValueDisplay aria-live="polite">+{currencySymbol}{value}</ValueDisplay>
             <ControlButton onClick={handleIncrement} disabled={value >= max} whileTap={{scale: 0.9}}
                            aria-label="Increase value">+</ControlButton>
         </StepperWrapper>

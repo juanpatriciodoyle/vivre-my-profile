@@ -4,7 +4,6 @@ import {greetingTexts} from '../../constants/greetings';
 import AIIcon from '../../assets/icons/AIIcon';
 import {useUserDetails} from '../../hooks/useUserDetails';
 import {useParallax} from '../../hooks/useParallax';
-import {fetchGovData, GovData} from '../../services/govApiService';
 import {AiAssistantModal} from '../AiAssistantModal/AiAssistanModal';
 import SettingsButton from "../../utils/dx/SettingsButton";
 
@@ -165,7 +164,7 @@ const ActionButton = styled.button`
     border: 1px solid ${({theme}) => theme.colors.borders};
 
     &:hover {
-        background-color: ${({theme}) => theme.colors.primaryTint};
+        background-color: ${({theme}) => theme.colors.secondaryAction};
     }
 `;
 
@@ -213,7 +212,6 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                                                        }) => {
     const [isAddressVisible, setIsAddressVisible] = useState(false);
     const [hasDoneEntrance, setHasDoneEntrance] = useState(false);
-    const [govData, setGovData] = useState<GovData | null>(null);
     const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const [hasNotificationBeenSeen, setHasNotificationBeenSeen] = useState(false);
 
@@ -232,17 +230,10 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
             setHasDoneEntrance(true);
         }, 2000);
 
-        const getGovData = async () => {
-            const data = await fetchGovData(userName);
-            setGovData(data);
-        };
-
-        getGovData();
-
         return () => {
             clearTimeout(entranceTimer);
         };
-    }, [userName]);
+    }, []);
 
     const handleMouseEnter = () => {
         if (displayUserAddress) {
@@ -257,10 +248,8 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
     };
 
     const handleAiModalOpen = () => {
-        if (govData) {
-            setIsAiModalOpen(true);
-            setHasNotificationBeenSeen(true);
-        }
+        setIsAiModalOpen(true);
+        setHasNotificationBeenSeen(true);
     };
 
     const handleAiModalClose = () => {
@@ -308,7 +297,7 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                 <ActionButtonsContainer>
                     <ActionButton onClick={handleAiModalOpen}>
                         <AIIcon/>
-                        {govData && !hasNotificationBeenSeen && <NotificationBadge/>}
+                        {!hasNotificationBeenSeen && <NotificationBadge/>}
                     </ActionButton>
                     <SettingsButton
                         isLocalhost={isLocalhost}
@@ -320,7 +309,6 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
             <AiAssistantModal
                 isOpen={isAiModalOpen}
                 onClose={handleAiModalClose}
-                govData={govData}
             />
         </>
     );

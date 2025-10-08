@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import {modalTexts} from '../../../constants/modalTexts';
-import {formatCurrency} from '../../../utils/financialCalculations';
 import StepperInput from '../../StepperInput/StepperInput';
 import {PrimaryButton} from '../shared';
+import {useSettings} from "../../../utils/dx/settingsContext";
+import {useCurrency} from "../../../hooks/useCurrency";
 
 const StepContainer = styled.div` text-align: center; `;
 const Lever = styled.div`
@@ -24,8 +25,8 @@ const StrategyButton = styled.button<{ $isActive: boolean }>`
     padding: 8px;
     border-radius: ${({theme}) => theme.sizing.borderRadius.buttons};
     border: 1px solid ${({theme, $isActive}) => $isActive ? theme.colors.primary : theme.colors.borders};
-    background-color: ${({theme, $isActive}) => $isActive ? theme.colors.primaryTint : 'transparent'};
-    color: ${({theme, $isActive}) => $isActive ? theme.colors.primary : theme.colors.textBody};
+    background-color: ${({theme, $isActive}) => $isActive ? theme.colors.secondaryAction : 'transparent'};
+    color: ${({theme, $isActive}) => $isActive ? theme.colors.textHeadings : theme.colors.textBody};
     font-weight: ${({theme}) => theme.font.weights.medium};
     cursor: pointer;
     transition: all 0.2s ease;
@@ -101,8 +102,6 @@ interface Step3Props {
     setAnimationType: (type: 'smooth' | 'pop') => void;
 }
 
-const texts = modalTexts.step3;
-
 export const Step3CloseTheGap: React.FC<Step3Props> = ({
                                                            onNext,
                                                            contributionIncrease,
@@ -114,6 +113,9 @@ export const Step3CloseTheGap: React.FC<Step3Props> = ({
                                                            dormantPensionValue,
                                                            setAnimationType
                                                        }) => {
+    const {settings} = useSettings();
+    const {formatCurrency} = useCurrency();
+    const texts = modalTexts(settings.country).step3;
 
     const handleContributionChange = (newValue: number) => {
         setAnimationType('smooth');

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {motion, Transition} from 'framer-motion';
-import {formatCurrency} from '../../utils/financialCalculations';
+import {useCurrency} from "../../hooks/useCurrency";
 
 const ChartWrapper = styled.div`
     width: 100%;
@@ -53,10 +53,10 @@ const ValueLabel = styled(motion.span)`
     right: 12px;
     transform: translateY(-50%);
     font-weight: bold;
-    color: white;
+    color: ${({theme}) => theme.colors.dark};
     font-size: 14px;
     z-index: 4;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+    text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.4);
 `;
 
 interface GapChartProps {
@@ -72,6 +72,7 @@ export const GapChart: React.FC<GapChartProps> = ({
                                                       goalValue,
                                                       animationType = 'smooth'
                                                   }) => {
+    const {formatCurrency} = useCurrency();
     const maxValue = Math.max(projectionValue, newProjectionValue, goalValue) * 1.1;
     const theme = {colors: {primary: '#4f9a7c', error: '#d00a74'}};
 

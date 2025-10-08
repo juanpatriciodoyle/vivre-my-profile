@@ -3,7 +3,7 @@ import styled, {keyframes} from 'styled-components';
 import {AnimatePresence, motion} from 'framer-motion';
 import {X} from 'lucide-react';
 import {useSettings} from './settingsContext';
-import {Currency, Settings, Theme} from './types';
+import {Country, Settings, Theme} from './types';
 import {MODAL_DATA} from './dx-data';
 import {getFormGroups} from './formGroups';
 import Text from '../../components/Text';
@@ -161,7 +161,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({isOpen, onClose}) => {
         onClose();
     };
 
-    const handleSettingChange = (key: keyof Settings, value: Theme | Currency) => {
+    const handleSettingChange = (key: keyof Settings, value: Theme | Country) => {
         setCurrentSelection((prev: Settings) => ({...prev, [key]: value}));
     };
 

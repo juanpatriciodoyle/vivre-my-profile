@@ -1,3 +1,5 @@
+import {Country} from "../utils/dx/types";
+
 export const retirementGoals = {
     essential: {
         label: "Essential Living",
@@ -13,7 +15,7 @@ export const retirementGoals = {
     }
 };
 
-export const modalTexts = {
+export const modalTexts = (country: Country) => ({
     stepper: [
         "Verify Data",
         "Define Goal",
@@ -23,24 +25,24 @@ export const modalTexts = {
     step1: {
         title: "Building Your Personalised Retirement Forecast",
         intro: "Hi Kate. To create the most accurate forecast, I've securely synchronized your latest data from several official sources. Please confirm the details below.",
-        sourceRevenue: "Irish Revenue",
+        sourceRevenue: country === 'IE' ? "Irish Revenue" : "HM Revenue & Customs",
         incomeLabel: "Annual Income (Reported)",
         pensionContributionsLabel: "Tax-Relieved Pension Contributions (YTD)",
-        sourceDsp: "Dept. of Social Protection",
+        sourceDsp: country === 'IE' ? "Dept. of Social Protection" : "Dept. for Work and Pensions",
         statePensionLabel: "Projected State Pension (at age 67)",
-        sourceRegistry: "Public Registry",
+        sourceRegistry: country === 'IE' ? "Public Registry" : "General Register Office",
         dependentsLabel: "Registered Dependents",
         confirmButton: "Data is Correct, Build My Forecast",
         tooltips: {
             income: {
-                title: "Data Source: Irish Revenue",
-                content: "This is the taxable income as reported in your most recent P60/Revenue statement, synchronized on " + new Date().toLocaleDateString() + ".",
-                link: "https://www.revenue.ie/"
+                title: `Data Source: ${country === 'IE' ? "Irish Revenue" : "HMRC"}`,
+                content: "This is the taxable income as reported in your most recent statement, synchronized on " + new Date().toLocaleDateString() + ".",
+                link: country === 'IE' ? "https://www.revenue.ie/" : "https://www.gov.uk/government/organisations/hm-revenue-customs"
             },
             dsp: {
-                title: "Data Source: Dept. of Social Protection",
-                content: "This figure is calculated based on verified PRSI contributions, which we confirm via an API integration with the DSP.",
-                link: "https://www.gov.ie/en/organisation/department-of-social-protection/"
+                title: `Data Source: ${country === 'IE' ? "Dept. of Social Protection" : "DWP"}`,
+                content: "This figure is calculated based on verified social security contributions, which we confirm via an API integration.",
+                link: country === 'IE' ? "https://www.gov.ie/en/organisation/department-of-social-protection/" : "https://www.gov.uk/government/organisations/department-for-work-pensions"
             },
         }
     },
@@ -74,9 +76,9 @@ export const modalTexts = {
         finishButton: "All Done, Thank You!",
         zeroAction: {
             title: "Your Current Plan Confirmed",
-            intro: (projection: string) => `Excellent. You've confirmed your retirement plan based on the latest official Irish data. Your current approach is projected to achieve a final pot of ${projection}.`,
+            intro: (projection: string) => `Excellent. You've confirmed your retirement plan based on the latest official data. Your current approach is projected to achieve a final pot of ${projection}.`,
             action: "Save Your Forecast: Add your personalised retirement forecast to your dashboard to track your progress and receive alerts if your goal changes.",
             button: "Go to Dashboard"
         }
     }
-};
+});

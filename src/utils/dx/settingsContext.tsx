@@ -9,7 +9,7 @@ interface SettingsContextType {
 
 const defaultSettings: Settings = {
     theme: settingsConfig.theme.defaultValue,
-    currency: settingsConfig.currency.defaultValue,
+    country: settingsConfig.country.defaultValue,
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
