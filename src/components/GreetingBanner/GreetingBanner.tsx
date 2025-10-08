@@ -6,6 +6,7 @@ import {useUserDetails} from '../../hooks/useUserDetails';
 import {useParallax} from '../../hooks/useParallax';
 import {AiAssistantModal} from '../AiAssistantModal/AiAssistanModal';
 import SettingsButton from "../../utils/dx/SettingsButton";
+import {defaultUser} from '../../constants/users';
 
 const fadeIn = keyframes`
     from {
@@ -295,10 +296,12 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                     </UserInfo>
                 </ProfileContainer>
                 <ActionButtonsContainer>
-                    <ActionButton onClick={handleAiModalOpen}>
-                        <AIIcon/>
-                        {!hasNotificationBeenSeen && <NotificationBadge/>}
-                    </ActionButton>
+                    {displayName === defaultUser.displayName && (
+                        <ActionButton onClick={handleAiModalOpen}>
+                            <AIIcon/>
+                            {!hasNotificationBeenSeen && <NotificationBadge/>}
+                        </ActionButton>
+                    )}
                     <SettingsButton
                         isLocalhost={isLocalhost}
                         onClick={onSettingsClick}
