@@ -53,7 +53,7 @@ export const Step4FinalPlan: React.FC<Step4Props> = ({planClosesAmount, shortfal
             <ProgressRing percentage={percentageClosed}/>
             <ResultText>{texts.summaryGoalClosed}</ResultText>
             {percentageClosed >= 100 ? (
-                <GoalMetText>PLAN ACHIEVES GOAL</GoalMetText>
+                <GoalMetText>{texts.goalReached}</GoalMetText>
             ) : (
                 <ResultText>Remaining Gap: {formatCurrency(shortfall - planClosesAmount)}</ResultText>
             )}

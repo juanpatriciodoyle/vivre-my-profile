@@ -63,6 +63,7 @@ export const modalTexts = (country: Country) => ({
     step4: {
         title: "Your Final Plan",
         summaryGoalClosed: "Percentage of Goal Closed",
+        goalReached: "PLAN ACHIEVES GOAL",
         summaryRemainingGap: "Remaining Gap",
         finalCta: "See Next Steps for Action",
     },
