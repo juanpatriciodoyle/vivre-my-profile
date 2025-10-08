@@ -6,6 +6,7 @@ import {useUserDetails} from '../../hooks/useUserDetails';
 import {useParallax} from '../../hooks/useParallax';
 import {fetchGovData, GovData} from '../../services/govApiService';
 import {AiAssistantModal} from '../AiAssistantModal/AiAssistanModal';
+import SettingsButton from "../../utils/dx/SettingsButton";
 
 const fadeIn = keyframes`
     from {
@@ -151,16 +152,17 @@ const AddressText = styled.p<{ $revealed: boolean }>`
 
 const ActionButton = styled.button`
     background: none;
-    border: none;
     cursor: pointer;
     padding: 8px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: auto;
     box-sizing: border-box;
     position: relative;
+    width: 56px;
+    height: 56px;
+    border: 1px solid ${({theme}) => theme.colors.borders};
 
     &:hover {
         background-color: ${({theme}) => theme.colors.primaryTint};
@@ -169,8 +171,8 @@ const ActionButton = styled.button`
 
 const NotificationBadge = styled.div`
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 10px;
+    right: 10px;
     width: 8px;
     height: 8px;
     background-color: ${({theme}) => theme.colors.primary};
@@ -186,21 +188,33 @@ const ProfileContainer = styled.div`
     perspective: 1000px;
 `;
 
+const ActionButtonsContainer = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 16px;
+`;
+
 interface GreetingBannerProps {
     userName: string;
     customerId: string;
     userAddress: string;
+    onSettingsClick: () => void;
+    isSettingsModalOpen: boolean;
+    isLocalhost: boolean;
 }
 
 const GreetingBanner: React.FC<GreetingBannerProps> = ({
                                                            userName,
                                                            customerId,
                                                            userAddress,
+                                                           onSettingsClick,
+                                                           isSettingsModalOpen,
+                                                           isLocalhost
                                                        }) => {
     const [isAddressVisible, setIsAddressVisible] = useState(false);
     const [hasDoneEntrance, setHasDoneEntrance] = useState(false);
     const [govData, setGovData] = useState<GovData | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const [hasNotificationBeenSeen, setHasNotificationBeenSeen] = useState(false);
 
     const avatarRef = useRef<HTMLImageElement>(null);
@@ -242,15 +256,15 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
         }
     };
 
-    const handleModalOpen = () => {
+    const handleAiModalOpen = () => {
         if (govData) {
-            setIsModalOpen(true);
+            setIsAiModalOpen(true);
             setHasNotificationBeenSeen(true);
         }
     };
 
-    const handleModalClose = () => {
-        setIsModalOpen(false);
+    const handleAiModalClose = () => {
+        setIsAiModalOpen(false);
     };
 
     return (
@@ -291,14 +305,21 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                         )}
                     </UserInfo>
                 </ProfileContainer>
-                <ActionButton onClick={handleModalOpen}>
-                    <AIIcon/>
-                    {govData && !hasNotificationBeenSeen && <NotificationBadge/>}
-                </ActionButton>
+                <ActionButtonsContainer>
+                    <ActionButton onClick={handleAiModalOpen}>
+                        <AIIcon/>
+                        {govData && !hasNotificationBeenSeen && <NotificationBadge/>}
+                    </ActionButton>
+                    <SettingsButton
+                        isLocalhost={isLocalhost}
+                        onClick={onSettingsClick}
+                        isActive={isSettingsModalOpen}
+                    />
+                </ActionButtonsContainer>
             </Header>
             <AiAssistantModal
-                isOpen={isModalOpen}
-                onClose={handleModalClose}
+                isOpen={isAiModalOpen}
+                onClose={handleAiModalClose}
                 govData={govData}
             />
         </>
