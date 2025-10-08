@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import GreetingBanner from "./components/GreetingBanner/GreetingBanner";
-import {defaultUser} from "./constants/users";
 import SettingsModal from "./utils/dx/SettingsModal";
 import {GlobalStyle} from "./styles/globalStyles";
 import {useSettings} from "./utils/dx/settingsContext";
@@ -16,8 +15,8 @@ function App() {
     );
 
     const userId = window.appConfig?.userUid || 'VIV-ACCOUNT-1';
-    const userName = window.appConfig?.userCn || defaultUser.displayName;
-    const userLocation = (window.appConfig?.userLocation || '10 Downing Street, London, SW1A 2AA').replace(/[[\]]/g, '');
+    const userName = window.appConfig?.userCn || "VIV-USERNAME-1";
+    const userLocation = (window.appConfig?.userLocation || 'VIV-LOCATION-1').replace(/[[\]]/g, '');
 
     return (
         <>
