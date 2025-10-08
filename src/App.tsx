@@ -14,9 +14,9 @@ function App() {
         window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
     );
 
-    const userId = window.appConfig?.userUid || 'VIV-ACCOUNT-1';
-    const userName = window.appConfig?.userCn || "VIV-USERNAME-1";
-    const userLocation = (window.appConfig?.userLocation || 'VIV-LOCATION-1').replace(/[[\]]/g, '');
+    const userId = window.__SPNS__appConfig?.userUid || 'VIV-ACCOUNT-1';
+    const userName = window.__SPNS__appConfig?.userCn || "VIV-USERNAME-1";
+    const userLocation = (window.__SPNS__appConfig?.userLocation || 'VIV-LOCATION-1').replace(/[[\]]/g, '');
 
     return (
         <>

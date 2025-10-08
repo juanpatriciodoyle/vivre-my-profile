@@ -78,7 +78,7 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({isOpen, onClo
         if (isOpen) {
             setGovData(null);
             setCsoData(null);
-            let userName = window.appConfig?.userCn || defaultUser.displayName;
+            let userName = window.__SPNS__appConfig?.userCn || defaultUser.displayName;
             if (userName.startsWith('[Plugin:')) {
                 userName = defaultUser.displayName;
             }
