@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import {motion} from 'framer-motion';
+import React, {useEffect} from 'react';
+import styled, {keyframes, useTheme} from 'styled-components';
+import {motion, useSpring, useTransform} from 'framer-motion';
 
 const RingWrapper = styled.div`
     position: relative;
@@ -13,28 +13,33 @@ const Svg = styled.svg`
     width: 100%;
     height: 100%;
     transform: rotate(-90deg);
+    overflow: visible;
 `;
 
 const Circle = styled(motion.circle)`
     stroke-width: 12;
     fill: transparent;
+    stroke-linecap: round;
 `;
 
 const CircleBackground = styled(Circle)`
     stroke: ${({theme}) => theme.colors.borders};
 `;
 
-const CircleProgress = styled(Circle)<{ $isGoalMet: boolean }>`
-    stroke: ${({theme, $isGoalMet}) => $isGoalMet ? theme.colors.success : theme.colors.error};
-    stroke-linecap: round;
+const pulse = keyframes`
+    0%, 100% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(1.2);
+    }
 `;
 
-const CircleSparkle = styled(Circle)`
-    stroke: white;
-    stroke-width: 2;
+const CircleProgress = styled(Circle)<{ $usePulse?: boolean }>`
+    animation: ${({$usePulse}) => $usePulse && pulse} 2s infinite ease-in-out;
 `;
 
-const PercentageText = styled(motion.div)`
+const PercentageTextContainer = styled(motion.div)`
     position: absolute;
     top: 0;
     left: 0;
@@ -45,50 +50,98 @@ const PercentageText = styled(motion.div)`
     justify-content: center;
     font-size: 28px;
     font-weight: ${({theme}) => theme.font.weights.bold};
+    color: ${({theme}) => theme.colors.textHeadings};
 `;
+
+interface AnimatedCounterProps {
+    value: number;
+}
+
+const AnimatedCounter: React.FC<AnimatedCounterProps> = ({value}) => {
+    const motionValue = useSpring(0, {damping: 50, stiffness: 100});
+    const rounded = useTransform(motionValue, (latest) => Math.round(latest));
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            motionValue.set(value);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [value, motionValue]);
+
+    return <motion.span>{rounded}</motion.span>;
+};
 
 interface ProgressRingProps {
     percentage: number;
 }
 
 export const ProgressRing: React.FC<ProgressRingProps> = ({percentage}) => {
+    const theme = useTheme();
     const radius = 50;
+    const center = 60;
     const circumference = 2 * Math.PI * radius;
-    const progress = Math.min(percentage, 100);
-    const strokeDashoffset = circumference - (progress / 100) * circumference;
     const isGoalMet = percentage >= 100;
+    const progress = Math.min(percentage, 100);
+
+    const progressValue = useSpring(0, {
+        damping: 50,
+        stiffness: 50,
+    });
+
+    useEffect(() => {
+        progressValue.set(progress);
+    }, [progress, progressValue]);
+
+    const strokeDashoffset = useTransform(
+        progressValue,
+        [0, 100],
+        [circumference, 0]
+    );
 
     return (
         <RingWrapper>
             <Svg viewBox="0 0 120 120">
-                <CircleBackground cx="60" cy="60" r={radius}/>
+                <defs>
+                    <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor={theme.colors.warning}/>
+                        <stop offset="100%" stopColor={theme.colors.error}/>
+                    </linearGradient>
+                </defs>
+
+                <CircleBackground cx={center} cy={center} r={radius}/>
+
                 <CircleProgress
-                    $isGoalMet={isGoalMet}
-                    cx="60"
-                    cy="60"
+                    stroke="url(#progress-gradient)"
+                    cx={center}
+                    cy={center}
                     r={radius}
                     strokeDasharray={circumference}
-                    initial={{strokeDashoffset: circumference}}
-                    animate={{strokeDashoffset}}
-                    transition={{duration: 1, ease: 'easeOut'}}
+                    style={{strokeDashoffset}}
                 />
+
                 {isGoalMet && (
-                    <CircleSparkle
-                        cx="60" cy="60" r={radius}
-                        strokeDasharray="1 15"
-                        initial={{pathLength: 0, opacity: 1}}
-                        animate={{pathLength: 1}}
-                        transition={{duration: 0.5, ease: 'easeIn', delay: 0.8}}
+                    <CircleProgress
+                        $usePulse={true}
+                        stroke={theme.colors.primaryHover}
+                        cx={center}
+                        cy={center}
+                        r={radius}
+                        strokeDasharray={circumference}
+                        style={{strokeDashoffset: 0}}
+                        initial={{opacity: 0}}
+                        animate={{opacity: 1}}
+                        transition={{delay: 3, duration: 0.5}}
                     />
                 )}
             </Svg>
-            <PercentageText
+            <PercentageTextContainer
                 initial={{opacity: 0}}
                 animate={{opacity: 1}}
-                transition={{duration: 0.5, delay: 0.5}}
+                transition={{duration: 0.5}}
             >
-                {Math.round(percentage)}%
-            </PercentageText>
+                <AnimatedCounter value={percentage}/>%
+            </PercentageTextContainer>
         </RingWrapper>
     );
 };

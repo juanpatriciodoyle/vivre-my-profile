@@ -3,9 +3,11 @@ import GreetingBanner from "./components/GreetingBanner/GreetingBanner";
 import {defaultUser} from "./constants/users";
 import SettingsModal from "./utils/dx/SettingsModal";
 import {GlobalStyle} from "./styles/globalStyles";
+import {useSettings} from "./utils/dx/settingsContext";
 
 function App() {
     const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
+    const {settings} = useSettings();
 
     const isLocalhost = Boolean(
         window.location.hostname === 'localhost' ||
