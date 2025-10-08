@@ -106,7 +106,7 @@ const UserName = styled.h1<{ $initialLoad: boolean }>`
     ${textEntranceAnimation};
 `;
 
-const CustomerIdWrapper = styled.div<{ $isInteractive: boolean }>`
+const SubtextWrapper = styled.div<{ $isInteractive: boolean }>`
     margin-top: 4px;
     line-height: 1.4;
     position: relative;
@@ -119,15 +119,12 @@ const CustomerIdWrapper = styled.div<{ $isInteractive: boolean }>`
             `}
 `;
 
-const CustomerIdText = styled.p<{ $revealed: boolean; $initialLoad: boolean; }>`
+const CustomerIdText = styled.p<{ $revealed: boolean }>`
     margin: 0;
     font-size: ${({theme}) => theme.font.sizes.subtext};
     color: ${({theme}) => theme.colors.textBody};
-    opacity: ${({$revealed}) => ($revealed ? 0 : 1)};
+    opacity: ${({$revealed}) => ($revealed ? 1 : 0)};
     transition: opacity 0.2s ease-in-out;
-    animation: ${({$initialLoad}) =>
-            !$initialLoad ? slideUpFadeIn : 'none'} 400ms ease-out both;
-    animation-delay: 400ms;
     position: absolute;
     top: 0;
     left: 0;
@@ -136,12 +133,15 @@ const CustomerIdText = styled.p<{ $revealed: boolean; $initialLoad: boolean; }>`
     overflow: hidden;
 `;
 
-const AddressText = styled.p<{ $revealed: boolean }>`
+const AddressText = styled.p<{ $revealed: boolean; $initialLoad: boolean; }>`
     margin: 0;
     font-size: ${({theme}) => theme.font.sizes.subtext};
     color: ${({theme}) => theme.colors.textBody};
-    opacity: ${({$revealed}) => ($revealed ? 1 : 0)};
+    opacity: ${({$revealed}) => ($revealed ? 0 : 1)};
     transition: opacity 0.2s ease-in-out;
+    animation: ${({$initialLoad}) =>
+            !$initialLoad ? slideUpFadeIn : 'none'} 400ms ease-out both;
+    animation-delay: 400ms;
     position: absolute;
     top: 0;
     left: 0;
@@ -211,7 +211,7 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                                                            isSettingsModalOpen,
                                                            isLocalhost
                                                        }) => {
-    const [isAddressVisible, setIsAddressVisible] = useState(false);
+    const [isCustomerIdVisible, setCustomerIdVisible] = useState(false);
     const [hasDoneEntrance, setHasDoneEntrance] = useState(false);
     const [isAiModalOpen, setIsAiModalOpen] = useState(false);
     const [hasNotificationBeenSeen, setHasNotificationBeenSeen] = useState(false);
@@ -238,13 +238,13 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
 
     const handleMouseEnter = () => {
         if (displayUserAddress) {
-            setIsAddressVisible(true);
+            setCustomerIdVisible(true);
         }
     };
 
     const handleMouseLeave = () => {
         if (displayUserAddress) {
-            setIsAddressVisible(false);
+            setCustomerIdVisible(false);
         }
     };
 
@@ -276,22 +276,22 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                             {displayName}
                         </UserName>
                         {displayCustomerId && (
-                            <CustomerIdWrapper
+                            <SubtextWrapper
                                 $isInteractive={!!displayUserAddress}
                                 onMouseEnter={handleMouseEnter}
                                 onMouseLeave={handleMouseLeave}
                             >
-                                <CustomerIdText
-                                    $revealed={isAddressVisible}
+                                <AddressText
+                                    $revealed={isCustomerIdVisible}
                                     $initialLoad={hasDoneEntrance}
                                 >
+                                    {displayUserAddress}
+                                </AddressText>
+                                <CustomerIdText $revealed={isCustomerIdVisible}>
                                     {greetingTexts.customerIdPrefix}
                                     {displayCustomerId}
                                 </CustomerIdText>
-                                <AddressText $revealed={isAddressVisible}>
-                                    {displayUserAddress}
-                                </AddressText>
-                            </CustomerIdWrapper>
+                            </SubtextWrapper>
                         )}
                     </UserInfo>
                 </ProfileContainer>
