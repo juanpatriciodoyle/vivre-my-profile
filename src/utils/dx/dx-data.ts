@@ -11,7 +11,7 @@ export const COUNTRIES: { value: Country; label: string }[] = [
 ];
 
 export const DEFAULT_THEME: Theme = 'light';
-export const DEFAULT_COUNTRY: Country = 'GB';
+export const DEFAULT_COUNTRY: Country = 'IE';
 
 export const MODAL_DATA = {
     general: {
