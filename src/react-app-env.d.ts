@@ -6,6 +6,7 @@ declare global {
             userUid: string;
             userCn: string;
             userLocation: string;
+            isEditor: string;
         };
     }
 }

@@ -20,6 +20,7 @@
             userUid: '[Plugin:EvaluateEL value="${wp.user.uid}"]',
             userCn: '[Plugin:EvaluateEL value="${wp.user.cn}"]',
             userLocation: '[Plugin:EvaluateEL value="${wp.user.l}"]',
+            isEditor: '[Plugin:EvaluateEL value=\'${wp.ac[wp.selectionModel.selected].hasPermission[&quot;EDITOR&quot;]}\']',
         };
     </script>
 </head>

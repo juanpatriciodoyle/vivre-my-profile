@@ -1,21 +1,20 @@
-import {defaultUser} from '../constants/users';
-import {Country} from '../utils/dx/types';
+import {Country} from '../utils/dx/types'
 
 export interface GovData {
     revenue: {
-        annualIncome: number;
-        pensionContributionsYTD: number;
-    };
+        annualIncome: number
+        pensionContributionsYTD: number
+    }
     socialProtection: {
-        projectedStatePension: number;
-    };
+        projectedStatePension: number
+    }
     publicRegistry: {
-        dependents: string;
-    };
+        dependents: string
+    }
     dormantPension: {
-        detected: boolean;
-        value: number;
-    };
+        detected: boolean
+        value: number
+    }
 }
 
 const mockDataIE: GovData = {
@@ -27,13 +26,13 @@ const mockDataIE: GovData = {
         projectedStatePension: 277,
     },
     publicRegistry: {
-        dependents: "1 New Dependent",
+        dependents: '1 New Dependent',
     },
     dormantPension: {
         detected: true,
         value: 25000,
     },
-};
+}
 
 const mockDataGB: GovData = {
     revenue: {
@@ -44,22 +43,25 @@ const mockDataGB: GovData = {
         projectedStatePension: 203.85,
     },
     publicRegistry: {
-        dependents: "1 New Dependent",
+        dependents: '1 New Dependent',
     },
     dormantPension: {
         detected: true,
         value: 25000,
     },
-};
+}
 
-export const fetchGovData = (userName: string, country: Country): Promise<GovData | null> => {
+export const fetchGovData = (
+    isEditor: boolean,
+    country: Country,
+): Promise<GovData | null> => {
     return new Promise((resolve) => {
         setTimeout(() => {
-            if (userName === defaultUser.displayName) {
-                resolve(country === 'IE' ? mockDataIE : mockDataGB);
+            if (!isEditor) {
+                resolve(country === 'IE' ? mockDataIE : mockDataGB)
             } else {
-                resolve(null);
+                resolve(null)
             }
-        }, 1500);
-    });
-};
+        }, 1500)
+    })
+}
