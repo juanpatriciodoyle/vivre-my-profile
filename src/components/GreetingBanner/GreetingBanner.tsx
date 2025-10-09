@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
-import styled, { css, keyframes } from 'styled-components'
-import { greetingTexts } from '../../constants/greetings'
+import React, {useEffect, useRef, useState} from 'react'
+import styled, {css, keyframes} from 'styled-components'
+import {greetingTexts} from '../../constants/greetings'
 import AIIcon from '../../assets/icons/AIIcon'
-import { useParallax } from '../../hooks/useParallax'
-import { AiAssistantModal } from '../AiAssistantModal/AiAssistanModal'
+import {useParallax} from '../../hooks/useParallax'
+import {AiAssistantModal} from '../AiAssistantModal/AiAssistanModal'
 import SettingsButton from '../../utils/dx/SettingsButton'
-import { adminUser, defaultUser } from '../../constants/users'
-import adminLogo from '../../assets/images/Logo.png'
+import {adminUser, defaultUser} from '../../constants/users'
 
 const fadeIn = keyframes`
     from {
@@ -40,7 +39,7 @@ const slideUpFadeIn = keyframes`
 `
 
 const textEntranceAnimation = css<{ $initialLoad: boolean }>`
-    ${({ $initialLoad }) =>
+    ${({$initialLoad}) =>
             !$initialLoad &&
             css`
                 animation-name: ${slideUpFadeIn};
@@ -51,8 +50,8 @@ const textEntranceAnimation = css<{ $initialLoad: boolean }>`
 `
 
 const Header = styled.header`
-    background-color: ${({ theme }) => theme.colors.background};
-    border-bottom: 1px solid ${({ theme }) => theme.colors.borders};
+    background-color: ${({theme}) => theme.colors.background};
+    border-bottom: 1px solid ${({theme}) => theme.colors.borders};
     padding: 32px;
     display: flex;
     align-items: center;
@@ -66,12 +65,12 @@ const Avatar = styled.img<{ $initialLoad: boolean }>`
     height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid ${({ theme }) => theme.colors.primary};
+    border: 2px solid ${({theme}) => theme.colors.primary};
     box-sizing: border-box;
     transition: transform 0.1s ease-out;
     transform-style: preserve-3d;
 
-    ${({ $initialLoad }) =>
+    ${({$initialLoad}) =>
             !$initialLoad &&
             css`
                 animation-name: ${scaleIn};
@@ -90,18 +89,18 @@ const UserInfo = styled.div`
 
 const Greeting = styled.h3<{ $initialLoad: boolean }>`
     margin: 0;
-    font-size: ${({ theme }) => theme.font.sizes.h3};
-    color: ${({ theme }) => theme.colors.textBody};
-    font-weight: ${({ theme }) => theme.font.weights.regular};
+    font-size: ${({theme}) => theme.font.sizes.h3};
+    color: ${({theme}) => theme.colors.textBody};
+    font-weight: ${({theme}) => theme.font.weights.regular};
     animation-delay: 200ms;
     ${textEntranceAnimation};
 `
 
 const UserName = styled.h1<{ $initialLoad: boolean }>`
     margin: 0;
-    font-size: ${({ theme }) => theme.font.sizes.h1};
-    font-weight: ${({ theme }) => theme.font.weights.bold};
-    color: ${({ theme }) => theme.colors.textHeadings};
+    font-size: ${({theme}) => theme.font.sizes.h1};
+    font-weight: ${({theme}) => theme.font.weights.bold};
+    color: ${({theme}) => theme.colors.textHeadings};
     animation-delay: 300ms;
     ${textEntranceAnimation};
 `
@@ -112,7 +111,7 @@ const SubtextWrapper = styled.div<{ $isInteractive: boolean }>`
     position: relative;
     height: 1.4em;
 
-    ${({ $isInteractive }) =>
+    ${({$isInteractive}) =>
             $isInteractive &&
             css`
                 cursor: pointer;
@@ -121,9 +120,9 @@ const SubtextWrapper = styled.div<{ $isInteractive: boolean }>`
 
 const CustomerIdText = styled.p<{ $revealed: boolean }>`
     margin: 0;
-    font-size: ${({ theme }) => theme.font.sizes.subtext};
-    color: ${({ theme }) => theme.colors.textBody};
-    opacity: ${({ $revealed }) => ($revealed ? 1 : 0)};
+    font-size: ${({theme}) => theme.font.sizes.subtext};
+    color: ${({theme}) => theme.colors.textBody};
+    opacity: ${({$revealed}) => ($revealed ? 1 : 0)};
     transition: opacity 0.2s ease-in-out;
     position: absolute;
     top: 0;
@@ -135,13 +134,12 @@ const CustomerIdText = styled.p<{ $revealed: boolean }>`
 
 const AddressText = styled.p<{ $revealed: boolean; $initialLoad: boolean }>`
     margin: 0;
-    font-size: ${({ theme }) => theme.font.sizes.subtext};
-    color: ${({ theme }) => theme.colors.textBody};
-    opacity: ${({ $revealed }) => ($revealed ? 0 : 1)};
+    font-size: ${({theme}) => theme.font.sizes.subtext};
+    color: ${({theme}) => theme.colors.textBody};
+    opacity: ${({$revealed}) => ($revealed ? 0 : 1)};
     transition: opacity 0.2s ease-in-out;
-    animation: ${({ $initialLoad }) =>
-            !$initialLoad ? slideUpFadeIn : 'none'}
-    400ms ease-out both;
+    animation: ${({$initialLoad}) =>
+            !$initialLoad ? slideUpFadeIn : 'none'} 400ms ease-out both;
     animation-delay: 400ms;
     position: absolute;
     top: 0;
@@ -163,10 +161,10 @@ const ActionButton = styled.button`
     position: relative;
     width: 56px;
     height: 56px;
-    border: 1px solid ${({ theme }) => theme.colors.borders};
+    border: 1px solid ${({theme}) => theme.colors.borders};
 
     &:hover {
-        background-color: ${({ theme }) => theme.colors.secondaryAction};
+        background-color: ${({theme}) => theme.colors.secondaryAction};
     }
 `
 
@@ -176,9 +174,9 @@ const NotificationBadge = styled.div`
     right: 10px;
     width: 8px;
     height: 8px;
-    background-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({theme}) => theme.colors.primary};
     border-radius: 50%;
-    border: 1px solid ${({ theme }) => theme.colors.background};
+    border: 1px solid ${({theme}) => theme.colors.background};
     box-sizing: border-box;
 `
 
@@ -226,7 +224,7 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
 
     let avatarUrl: string
     if (userName === adminUser.loginName) {
-        avatarUrl = adminLogo
+        avatarUrl = adminUser.logoUrl
     } else if (userName === adminUser.displayName) {
         avatarUrl = adminUser.avatarUrl
     } else {
@@ -269,7 +267,7 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                         src={avatarUrl}
                         alt="Profile"
                         $initialLoad={hasDoneEntrance}
-                        style={{ transform: parallaxTransform }}
+                        style={{transform: parallaxTransform}}
                     />
                     <UserInfo>
                         <Greeting $initialLoad={hasDoneEntrance}>
@@ -299,8 +297,8 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                 <ActionButtonsContainer>
                     {!isEditor && (
                         <ActionButton onClick={handleAiModalOpen}>
-                            <AIIcon />
-                            {!hasNotificationBeenSeen && <NotificationBadge />}
+                            <AIIcon/>
+                            {!hasNotificationBeenSeen && <NotificationBadge/>}
                         </ActionButton>
                     )}
                     {isEditor && (
@@ -312,7 +310,7 @@ const GreetingBanner: React.FC<GreetingBannerProps> = ({
                     )}
                 </ActionButtonsContainer>
             </Header>
-            <AiAssistantModal isOpen={isAiModalOpen} onClose={handleAiModalClose} />
+            <AiAssistantModal isOpen={isAiModalOpen} onClose={handleAiModalClose}/>
         </>
     )
 }
